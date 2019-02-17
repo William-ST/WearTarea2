@@ -12,4 +12,11 @@
         android:orderInCategory="1"
         android:title="Partida"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/take_photo"
+        android:orderInCategory="2"
+        android:title="Foto"
+        android:icon="@drawable/ic_camera"
+        app:showAsAction="ifRoom" />
 </menu>

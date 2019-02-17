@@ -13,10 +13,13 @@ import android.widget.TextView;
 
 import com.example.comun.DireccionesGestureDetector;
 import com.example.comun.Partida;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wearable.DataClient;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataItemBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
@@ -111,6 +114,31 @@ public class Contador extends AppCompatActivity implements DataClient.OnDataChan
                 return true;
             }
         });
+
+        Task<DataItemBuffer> task = Wearable.getDataClient(getApplicationContext()).getDataItems();
+        task.addOnCompleteListener(new OnCompleteListener<DataItemBuffer>() {
+            @Override
+            public void onComplete(@NonNull Task<DataItemBuffer> task) {
+                for (DataItem dataItem : task.getResult()) {
+                    if (dataItem.getUri().getPath().equals(WEAR_PUNTUACION)) {
+                        DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
+                        partida.setMiPuntuacion(dataMapItem.getDataMap().getByte(KEY_MIS_PUNTOS));
+                        partida.setSuPuntuacion(dataMapItem.getDataMap().getByte(KEY_SUS_PUNTOS));
+                        partida.setMisJuegos(dataMapItem.getDataMap().getByte(KEY_MIS_JUEGOS));
+                        partida.setSusJuegos(dataMapItem.getDataMap().getByte(KEY_SUS_JUEGOS));
+                        partida.setMisSets(dataMapItem.getDataMap().getByte(KEY_MIS_SETS));
+                        partida.setSusSets(dataMapItem.getDataMap().getByte(KEY_SUS_SETS));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                actualizaNumeros();
+                            }
+                        });
+                    }
+                }
+                //dataItems.release();
+            }
+        });
     }
 
     void actualizaNumeros() {
@@ -142,10 +170,6 @@ public class Contador extends AppCompatActivity implements DataClient.OnDataChan
                 DataItem item = evento.getDataItem();
                 if (item.getUri().getPath().equals(WEAR_PUNTUACION)) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    /*
-                    byte miPuntuacion, byte suPuntuacion, byte misJuegos,
-                          byte susJuegos, byte misSets, byte susSets
-                    * */
                     partida.setMiPuntuacion(dataMap.getByte(KEY_MIS_PUNTOS));
                     partida.setSuPuntuacion(dataMap.getByte(KEY_SUS_PUNTOS));
                     partida.setMisJuegos(dataMap.getByte(KEY_MIS_JUEGOS));

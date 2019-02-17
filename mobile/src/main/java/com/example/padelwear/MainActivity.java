@@ -1,7 +1,9 @@
 package com.example.padelwear;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +19,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataClient;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -24,12 +27,18 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.example.comun.Constants.ARG_START_REMOTE_ACTIVITY;
+import static com.example.comun.Constants.ASSET_FOTO;
+import static com.example.comun.Constants.ITEM_FOTO;
 import static com.example.comun.Constants.WEAR_ARRANCAR_ACTIVIDAD;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,9 +94,39 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.accion_contador) {
             startActivity(new Intent(this, Contador.class));
             return true;
+        } else if (id == R.id.take_photo) {
+            mandarFoto();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void mandarFoto() {
+        Intent intencion = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intencion.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intencion, 1234);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent datos) {
+        if (requestCode == 1234 && resultCode == RESULT_OK) {
+            Bundle extras = datos.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            Asset asset = createAssetFromBitmap(bitmap);
+            PutDataMapRequest putDataMapReq = PutDataMapRequest.create(ITEM_FOTO);
+            putDataMapReq.getDataMap().putAsset(ASSET_FOTO, asset);
+            putDataMapReq.getDataMap().putLong("marca_de_tiempo", new Date().getTime());
+            PutDataRequest request = putDataMapReq.asPutDataRequest();
+            Wearable.getDataClient(getApplicationContext()).putDataItem(request);
+        }
+    }
+
+    private static Asset createAssetFromBitmap(Bitmap bitmap) {
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+        return Asset.createFromBytes(byteStream.toByteArray());
     }
 
     private void mandarMensaje(final String path, final String texto) {
