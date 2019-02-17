@@ -24,8 +24,8 @@ import static com.example.comun.Constants.MOBILE_ARRANCAR_ACTIVIDAD;
 
 public class MainActivity extends WearableActivity {
     // Elementos a mostrar en la lista
-    String[] elementos = {"Partida", "Terminar partida", "Historial",
-            "Notificación", "Pasos", "Pulsaciones", "Terminar partida", "Swipe dismiss"};
+    String[] elementos = {"Partida", "Terminar partida", "Historial", "Jugadores",
+            "Notificación", "Pasos", "Pulsaciones", "Terminar partida", "Swipe dismiss", "Pasos 2"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,17 @@ public class MainActivity extends WearableActivity {
                     case 2:
                         startActivity(new Intent(MainActivity.this, Historial.class));
                         break;
-                    case 4:
+                    case 3:
+                        startActivity(new Intent(MainActivity.this, Jugadores.class));
+                        break;
+                    case 5:
                         startActivity(new Intent(MainActivity.this, Pasos.class));
                         break;
-                    case 7:
+                    case 8:
                         startActivity(new Intent(MainActivity.this, SwipeDismiss.class));
+                        break;
+                    case 9:
+                        startActivity(new Intent(MainActivity.this, Pasos2.class));
                         break;
                 }
             }
@@ -71,7 +77,9 @@ public class MainActivity extends WearableActivity {
             if (!getIntent().getBooleanExtra(ARG_START_REMOTE_ACTIVITY, false)) {
                 callRemoteActivity();
             }
-        } catch (Exception e) { callRemoteActivity(); }
+        } catch (Exception e) {
+            callRemoteActivity();
+        }
     }
 
     private void callRemoteActivity() {
