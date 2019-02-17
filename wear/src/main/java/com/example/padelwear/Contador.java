@@ -119,6 +119,7 @@ public class Contador extends WearableActivity implements DataClient.OnDataChang
         susSets.getPaint().setAntiAlias(false);
         hora.setTypeface(fuenteFina);
         hora.getPaint().setAntiAlias(false);
+        refreshHour();
         hora.setVisibility(View.VISIBLE);
     }
 
@@ -143,15 +144,21 @@ public class Contador extends WearableActivity implements DataClient.OnDataChang
     @Override
     public void onUpdateAmbient() {
         super.onUpdateAmbient();
+        refreshHour();
+    }
+
+    private void refreshHour() {
+        try {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         hora.setText(c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setAmbientEnabled();
+        setAmbientEnabled();
         setContentView(R.layout.contador);
 
         dismissOverlay = (DismissOverlayView) findViewById(R.id.dismiss_overlay);

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +38,13 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".WearReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.padelwear.ACTION_DEMAND" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
