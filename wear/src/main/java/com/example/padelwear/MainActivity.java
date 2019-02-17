@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class MainActivity extends WearableActivity {
     // Elementos a mostrar en la lista
     String[] elementos = {"Partida", "Terminar partida", "Historial",
-            "Notificación", "Pasos", "Pulsaciones", "Terminar partida"};
+            "Notificación", "Pasos", "Pulsaciones", "Terminar partida", "Swipe dismiss"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +20,8 @@ public class MainActivity extends WearableActivity {
         setContentView(R.layout.activity_main);
         WearableRecyclerView lista = (WearableRecyclerView)
                 findViewById(R.id.lista);
-        lista.setLayoutManager(new WearableLinearLayoutManager(this));
+        lista.setEdgeItemsCenteringEnabled(true);
+        lista.setLayoutManager(new WearableLinearLayoutManager(this, new CustomLayoutCallback()));
         Adaptador adaptador = new Adaptador(this, elementos);
         adaptador.setOnItemClickListener(new View.OnClickListener() {
             @Override
@@ -31,9 +32,22 @@ public class MainActivity extends WearableActivity {
                     case 1:
                         startActivity(new Intent(MainActivity.this, Confirmacion.class));
                         break;
+                    case 2:
+                        startActivity(new Intent(MainActivity.this, Historial.class));
+                        break;
+                    case 4:
+                        startActivity(new Intent(MainActivity.this, Pasos.class));
+                        break;
+                    case 7:
+                        startActivity(new Intent(MainActivity.this, SwipeDismiss.class));
+                        break;
                 }
             }
         });
         lista.setAdapter(adaptador);
+
+        lista.setCircularScrollingGestureEnabled(true);
+        lista.setScrollDegreesPerScreen(180);
+        lista.setBezelFraction(0.5f);
     }
 }
